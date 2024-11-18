@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, redirect, url_for, session, flash, request, current_app
+from flask import Blueprint, render_template, redirect, url_for, session, flash, request, current_app, jsonify
 from app.model import Order, Disinsector, Admin
 from database import db
 from sqlalchemy.orm import joinedload
@@ -114,3 +114,37 @@ def update_order_status():
     else:
         flash("Неавторизованный доступ.", 'danger')
         return redirect(url_for('auth.disinsector_login'))
+
+
+@main_bp.route('/update_order_details', methods=['POST'])
+@login_required
+def update_order_details():
+    if not isinstance(current_user, Disinsector):
+        return jsonify({"error": "Нет доступа"}), 403
+
+    order_id = request.form.get('order_id')
+    estimated_price = request.form.get('estimated_price')
+    final_price = request.form.get('final_price')
+    poison_type = request.form.get('poison_type')
+    insect_type = request.form.get('insect_type')
+    client_area = request.form.get('client_area')
+
+    try:
+        # Проверяем, что заявка принадлежит текущему дезинсектору
+        order = Order.query.filter_by(id=order_id, disinsector_id=current_user.id).first()
+        if not order:
+            return jsonify({"error": "Заявка не найдена или нет прав"}), 404
+
+        # Обновляем данные заявки
+        order.estimated_price = estimated_price
+        order.final_price = final_price
+        order.poison_type = poison_type
+        order.insect_type = insect_type
+        order.client_area = client_area
+
+        db.session.commit()
+        return jsonify({"message": "Данные успешно обновлены"}), 200
+    except Exception as e:
+        current_app.logger.error(f"Ошибка при обновлении заявки {order_id}: {e}")
+        return jsonify({"error": "Произошла ошибка при сохранении"}), 500
+
