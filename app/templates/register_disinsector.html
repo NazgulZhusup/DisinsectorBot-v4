@@ -1,0 +1,46 @@
+<!-- templates/register_disinsector.html -->
+
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Регистрация дезинсектора</title>
+    <style>
+        /* Ваши стили */
+        /* ... */
+    </style>
+</head>
+<body>
+    <div class="register-container">
+        <h1>Регистрация дезинсектора</h1>
+        <form method="POST" action="{{ url_for('auth.register_disinsector') }}">
+            {{ form.hidden_tag() }}
+            <label for="name">Имя:</label>
+            {{ form.name(size=32, id="name") }}
+
+            <label for="email">Email:</label>
+            {{ form.email(size=32, id="email") }}
+
+            <label for="token">Токен:</label>
+            {{ form.token(size=32, id="token") }}
+
+            <label for="password">Пароль:</label>
+            {{ form.password(size=32, id="password") }}
+
+            {{ form.submit(class="btn btn-primary") }}
+        </form>
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                <div class="message">
+                    {% for category, message in messages %}
+                        <p class="{{ category }}">{{ message }}</p>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        {% endwith %}
+        <div class="back-link">
+            <p><a href="{{ url_for('main.index') }}">На главную</a></p>
+        </div>
+    </div>
+</body>
+</html>

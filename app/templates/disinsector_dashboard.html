@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Личный кабинет</title>
+</head>
+<body>
+    <h1>Добро пожаловать, {{ disinsector.name }}!</h1>
+
+    <h2>Ваши заявки:</h2>
+    {% if orders %}
+    <table>
+        <tr>
+            <th>ID</th>
+            <th>Клиент</th>
+            <th>Адрес</th>
+            <th>Телефон</th>
+
+        </tr>
+        {% for order in orders %}
+        <tr>
+            <td>{{ order.id }}</td>
+            <td>{{ order.client.name }}</td>
+            <td>{{ order.client.address }}</td>
+            <td>{{ order.client.phone }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+    {% else %}
+    <p>На данный момент заявок нет.</p>
+    {% endif %}
+
+    <a href="{{ url_for('auth.logout') }}">Выйти</a>
+</body>
+</html>
